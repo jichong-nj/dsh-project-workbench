@@ -1405,6 +1405,8 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 .pw-project-progress { display:flex; flex-direction:column; gap:8px; }
 .pw-project-row { display:flex; align-items:flex-start; gap:9px; padding:8px; border:1px solid var(--pw-bd3); border-radius:9px; background:linear-gradient(90deg,var(--pw-bg1),var(--pw-bg3)); transition:transform .12s ease, box-shadow .12s ease; }
 .pw-project-row:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.06); }
+.pw-dash-item, .pw-project-row { height:62px; min-height:62px; box-sizing:border-box; }
+.pw-project-row { align-items:center; }
 .pw-project-icon { width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex:none; background:color-mix(in srgb,var(--pw-acc) 13%,var(--pw-bg3)); font-size:15px; }
 .pw-project-body { flex:1; min-width:0; }
 .pw-project-row.pw-progress-success .pw-project-icon { background:color-mix(in srgb,var(--pw-green) 15%,var(--pw-bg3)); }
