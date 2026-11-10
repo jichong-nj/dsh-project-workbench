@@ -1365,12 +1365,11 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 @media (max-width: 900px) { .pw-usage-summary { grid-template-columns:repeat(3,minmax(0,1fr)); } .pw-usage-heat-panel { padding:8px; } }
 .pw-insight-marquee { display:flex; align-items:center; gap:10px; height:34px; padding:0 12px; border:1px solid color-mix(in srgb,var(--pw-acc) 18%,var(--pw-bd3)); border-radius:9px; background:linear-gradient(90deg,color-mix(in srgb,var(--pw-acc) 7%,var(--pw-bg3)),var(--pw-bg3)); overflow:hidden; }
 .pw-insight-marquee-label { flex:none; color:var(--pw-acc); font-size:11px; font-weight:650; white-space:nowrap; }
-.pw-marquee-track { flex:1; min-width:0; overflow:hidden; }
-.pw-marquee-inner { display:flex; width:max-content; animation:pw-marquee-scroll 38s linear infinite; }
-.pw-insight-marquee:hover .pw-marquee-inner { animation-play-state:paused; }
-.pw-marquee-content { white-space:nowrap; padding-right:48px; color:var(--pw-mut); font-size:11.5px; }
-@keyframes pw-marquee-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .pw-marquee-inner { animation:none; } }
+.pw-marquee-track { flex:1; min-width:0; height:100%; overflow:hidden; position:relative; }
+.pw-marquee-item { position:absolute; left:0; top:50%; min-width:100%; white-space:nowrap; color:var(--pw-mut); font-size:11.5px; animation-name:pw-marquee-scroll; animation-timing-function:linear; animation-iteration-count:infinite; transform:translate(100%, -50%); }
+.pw-insight-marquee:hover .pw-marquee-item { animation-play-state:paused; }
+@keyframes pw-marquee-scroll { from { transform:translate(100%, -50%); } to { transform:translate(-100%, -50%); } }
+@media (prefers-reduced-motion: reduce) { .pw-marquee-item { animation:none; transform:translate(0, -50%); } }
 .pw-dash-layout { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:14px; align-items:start; }
 @media (max-width: 1040px) { .pw-dash-layout { grid-template-columns:1fr; } .pw-assistant { position:static; height:min(720px, 72vh); max-height:none; } }
 .pw-dash-main { min-width:0; }
