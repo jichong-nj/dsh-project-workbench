@@ -1333,12 +1333,12 @@ window.__ModuleLoader__.load({
 .pw-usage-arrow { color:var(--pw-dim); font-size:11px; }
 .pw-usage-heat-panel { border:1px solid var(--pw-bd3); border-radius:10px; padding:12px; background:var(--pw-bg1); overflow:hidden; display:flex; flex-direction:column; align-items:center; gap:10px; }
 .pw-usage-heat { display:inline-flex; flex-direction:column; gap:4px; min-width:max-content; margin:0 auto; }
-.pw-usage-months { display:grid; grid-auto-flow:column; grid-auto-columns:11px; column-gap:3px; margin-left:28px; height:14px; color:var(--pw-dim); font-size:10px; }
+.pw-usage-months { display:grid; grid-auto-flow:column; grid-auto-columns:10px; column-gap:2px; margin-left:24px; height:13px; color:var(--pw-dim); font-size:9.5px; }
 .pw-usage-months span { white-space:nowrap; overflow:visible; }
 .pw-usage-heat-row { display:flex; align-items:flex-start; gap:6px; }
-.pw-usage-weekdays { display:grid; grid-template-rows:repeat(7,11px); gap:3px; width:22px; flex:none; color:var(--pw-dim); font-size:9.5px; line-height:11px; }
-.pw-usage-grid { display:grid; grid-template-rows:repeat(7,11px); grid-auto-flow:column; grid-auto-columns:11px; gap:3px; }
-.pw-usage-cell { width:11px; height:11px; border-radius:2px; border:1px solid color-mix(in srgb,var(--pw-bd3) 65%,transparent); background:var(--pw-bg2); padding:0; }
+.pw-usage-weekdays { display:grid; grid-template-rows:repeat(7,10px); gap:2px; width:20px; flex:none; color:var(--pw-dim); font-size:8.5px; line-height:10px; }
+.pw-usage-grid { display:grid; grid-template-rows:repeat(7,10px); grid-auto-flow:column; grid-auto-columns:10px; gap:2px; }
+.pw-usage-cell { width:10px; height:10px; border-radius:2px; border:1px solid color-mix(in srgb,var(--pw-bd3) 65%,transparent); background:var(--pw-bg2); padding:0; }
 button.pw-usage-cell { cursor:pointer; }
 button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 .pw-usage-cell.l1 { background:#9be9a8; } .pw-usage-cell.l2 { background:#40c463; }
@@ -1721,7 +1721,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 		/* ───────────────────────── 项目列表 ───────────────────────── */
 
 		function UsageStatsCard() {
-			const HEAT_WEEKS = 26;
+			const HEAT_WEEKS = 52;
 			const [stats, setStats] = useState({ loading: true, data: null, error: null });
 			const [mode, setMode] = useState("day");
 			const [day, setDay] = useState("");
@@ -1927,7 +1927,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 									h("span", null, "少"),
 									[0, 1, 2, 3, 4].map((value) => h("span", { key: value, className: `pw-usage-cell l${value}` })),
 									h("span", null, "多"),
-									h("span", { className: "pw-usage-note" }, `近 6 个月每日 token · 单日峰值 ${fmt(peak)}`),
+									h("span", { className: "pw-usage-note" }, `近 12 个月每日 token · 单日峰值 ${fmt(peak)}`),
 								),
 							),
 							h(
