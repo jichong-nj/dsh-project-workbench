@@ -1363,6 +1363,14 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 .pw-usage-model .calls { color:var(--pw-dim); font-size:10.5px; flex:none; }
 .pw-usage-model .total { min-width:64px; text-align:right; font-weight:600; font-variant-numeric:tabular-nums; }
 @media (max-width: 900px) { .pw-usage-summary { grid-template-columns:repeat(3,minmax(0,1fr)); } .pw-usage-heat-panel { padding:8px; } }
+.pw-insight-marquee { display:flex; align-items:center; gap:10px; height:34px; padding:0 12px; border:1px solid color-mix(in srgb,var(--pw-acc) 18%,var(--pw-bd3)); border-radius:9px; background:linear-gradient(90deg,color-mix(in srgb,var(--pw-acc) 7%,var(--pw-bg3)),var(--pw-bg3)); overflow:hidden; }
+.pw-insight-marquee-label { flex:none; color:var(--pw-acc); font-size:11px; font-weight:650; white-space:nowrap; }
+.pw-marquee-track { flex:1; min-width:0; overflow:hidden; }
+.pw-marquee-inner { display:flex; width:max-content; animation:pw-marquee-scroll 38s linear infinite; }
+.pw-insight-marquee:hover .pw-marquee-inner { animation-play-state:paused; }
+.pw-marquee-content { white-space:nowrap; padding-right:48px; color:var(--pw-mut); font-size:11.5px; }
+@keyframes pw-marquee-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .pw-marquee-inner { animation:none; } }
 .pw-dash-layout { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:14px; align-items:start; }
 @media (max-width: 1040px) { .pw-dash-layout { grid-template-columns:1fr; } .pw-assistant { position:static; height:min(720px, 72vh); max-height:none; } }
 .pw-dash-main { min-width:0; }
@@ -2229,6 +2237,19 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 				{ className: "pw-page pw-dash" },
 				notice === null ? null : h("div", { className: `pw-toast${notice.kind === "warn" ? " warn" : ""}` }, notice.text),
 				h("div", { className: "pw-quick" }, h("span", { className: "label" }, "快速："), ...quick),
+				dashboard.insights.length === 0
+					? null
+					: h(
+							"div",
+							{ className: "pw-insight-marquee", title: dashboard.insights.join(" · ") },
+							h("span", { className: "pw-insight-marquee-label" }, "✦ AI 洞察"),
+							h(
+								"div",
+								{ className: "pw-marquee-track" },
+								h("div", { className: "pw-marquee-content" }, dashboard.insights.join("　·　")),
+								h("div", { className: "pw-marquee-content", "aria-hidden": "true" }, dashboard.insights.join("　·　")),
+							),
+						),
 				h(
 					"div",
 					{ className: "pw-dash-layout" },
@@ -2292,30 +2313,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 											),
 										),
 							),
-							h(
-								"section",
-								{ className: "pw-dash-card" },
-								h("div", { className: "pw-dash-card-head" }, h("h3", null, `📊 ${t("dashboard.weekly.title")}`)),
-								h(
-									"div",
-									{ className: "pw-week-grid" },
-									h("div", { className: "pw-week-stat success" }, h("b", null, dashboard.weekly.completed), h("span", null, t("dashboard.weekly.completed"))),
-									h("div", { className: "pw-week-stat info" }, h("b", null, dashboard.weekly.artifacts), h("span", null, t("dashboard.weekly.artifacts"))),
-									h("div", { className: "pw-week-stat" }, h("b", null, dashboard.weekly.sessions), h("span", null, t("dashboard.weekly.sessions"))),
-									h("div", { className: "pw-week-stat warn" }, h("b", null, dashboard.weekly.activity), h("span", null, t("dashboard.weekly.activity"))),
-								),
-							),
 							h(UsageStatsCard),
-							h(
-								"section",
-								{ className: "pw-dash-card" },
-								h("div", { className: "pw-dash-card-head" }, h("h3", null, `✨ ${t("dashboard.insights.title")}`)),
-								h(
-									"div",
-									{ className: "pw-insights" },
-									dashboard.insights.map((insight, index) => h("div", { key: index, className: "pw-insight" }, h("span", { className: "ico" }, "✦"), h("span", null, insight))),
-								),
-							),
 							h(
 								"section",
 								{ className: "pw-dash-card wide" },
