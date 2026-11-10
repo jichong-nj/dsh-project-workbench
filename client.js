@@ -2247,8 +2247,14 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 							h(
 								"div",
 								{ className: "pw-marquee-track" },
-								h("div", { className: "pw-marquee-content" }, dashboard.insights.join("　·　")),
-								h("div", { className: "pw-marquee-content", "aria-hidden": "true" }, dashboard.insights.join("　·　")),
+								h(
+									"span",
+									{
+										className: "pw-marquee-item",
+										style: { animationDuration: `${Math.max(12, Math.min(46, dashboard.insights.join("　·　").length * 0.18))}s` },
+									},
+									dashboard.insights.join("　·　"),
+								),
 							),
 						),
 				h(
