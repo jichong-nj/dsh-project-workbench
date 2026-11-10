@@ -1,0 +1,9 @@
+# dsh-project-workbench — host patch layer.
+#
+# A plain `- id:` patch only *modifies* an existing row; a new plugin row is
+# appended with `insert`. The browser half needs no row here: dsh-client-modules
+# discovers it from `dsh.client` in package.json and serves
+# /plugins/??@jichong/dsh-project-workbench/client.js&rev=<rev>.
+- insert:
+    - id: project-workbench
+      name: '@jichong/dsh-project-workbench'
