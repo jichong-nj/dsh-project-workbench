@@ -1139,6 +1139,22 @@ window.__ModuleLoader__.load({
   --pw-amber: var(--dsw-alias-state-warn-primary,#b26a00); --pw-radius: 10px;
   height:100%; overflow:auto; padding:20px 16px 48px; color:var(--pw-fg); background:var(--pw-bg); font-size:13px; line-height:1.5; }
 .pw-root * { box-sizing:border-box; }
+/* 侧边栏顶部的大号工作台入口 */
+button:has([data-workbench-entry]) {
+  min-height:58px;
+  margin:4px 2px 10px;
+  border:1px solid color-mix(in srgb,var(--dsw-alias-state-business-primary,#2f6fed) 24%,transparent);
+  border-radius:12px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--dsw-alias-state-business-primary,#2f6fed) 16%,transparent),color-mix(in srgb,var(--dsw-alias-state-business-primary,#2f6fed) 4%,transparent));
+  box-shadow:0 4px 14px color-mix(in srgb,var(--dsw-alias-state-business-primary,#2f6fed) 12%,transparent);
+}
+button:has([data-workbench-entry]):hover {
+  border-color:color-mix(in srgb,var(--dsw-alias-state-business-primary,#2f6fed) 55%,transparent);
+  background:linear-gradient(135deg,color-mix(in srgb,var(--dsw-alias-state-business-primary,#2f6fed) 22%,transparent),color-mix(in srgb,var(--dsw-alias-state-business-primary,#2f6fed) 7%,transparent));
+}
+button:has([data-workbench-entry]) [class*="panelGlyph"] svg { width:26px; height:26px; }
+button:has([data-workbench-entry]) [class*="panelTitle"] { font-size:15px; font-weight:650; line-height:20px; }
+button:has([data-workbench-entry]) [class*="panelTitle"]::after { content:"项目 · 任务 · 用量"; display:block; font-size:9.5px; font-weight:400; line-height:12px; color:var(--dsw-alias-label-tertiary,#8a929e); letter-spacing:0; }
 .pw-page { width:100%; max-width:none; margin:0; }
 .pw-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px; }
 .pw-head h1 { margin:0; font-size:20px; font-weight:650; letter-spacing:.2px; }
@@ -1711,6 +1727,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 					strokeLinecap: "round",
 					strokeLinejoin: "round",
 					"aria-hidden": "true",
+					"data-workbench-entry": "true",
 				},
 				h("path", { d: "M3.5 7.5A2.5 2.5 0 0 1 6 5h3l1.8 2H18a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5z" }),
 				h("path", { d: "M7.5 11.5h4M7.5 14.5h6.5" }),
@@ -5187,7 +5204,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 			ctx.effect(() => installDefaultSessionWorkspace(ctx), "project-workbench: default session workspace");
 			ctx.slots.inject("sidebar.panellist", () =>
 				ctx.slots.register(
-					{ name: "sidebar.panellist", id: PANEL_ID, order: 42, label: () => t("panel.title"), locale: NS },
+					{ name: "sidebar.panellist", id: PANEL_ID, order: -10, label: () => t("panel.title"), locale: NS },
 					PanelIcon,
 				),
 			);
