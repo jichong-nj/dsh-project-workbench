@@ -1366,9 +1366,10 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 .pw-dash-layout { display:grid; grid-template-columns:minmax(0,1fr) 340px; gap:14px; align-items:start; }
 @media (max-width: 1040px) { .pw-dash-layout { grid-template-columns:1fr; } .pw-assistant { position:static; height:min(720px, 72vh); max-height:none; } }
 .pw-dash-main { min-width:0; }
-.pw-dash-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:12px; }
+.pw-dash-grid { display:grid; grid-template-columns:1.05fr .95fr; gap:12px; align-items:stretch; }
 @media (max-width: 820px) { .pw-dash-grid { grid-template-columns:1fr; } }
-.pw-dash-card { background:var(--pw-bg3); border:1px solid var(--pw-bd); border-radius:12px; padding:13px 15px; min-height:120px; }
+.pw-dash-card { background:var(--pw-bg3); border:1px solid var(--pw-bd); border-radius:12px; padding:13px 15px; min-height:120px; height:100%; display:flex; flex-direction:column; }
+.pw-dash-card > .pw-dash-list, .pw-dash-card > .pw-project-progress { flex:1; }
 .pw-dash-card.wide { grid-column:1 / -1; }
 .pw-dash-card-head { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:10px; }
 .pw-dash-card-head h3 { margin:0; font-size:13px; font-weight:650; display:flex; align-items:center; gap:7px; }
