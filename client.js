@@ -1155,6 +1155,9 @@ button:has([data-workbench-entry]):hover {
 button:has([data-workbench-entry]) [class*="panelGlyph"] svg { width:26px; height:26px; }
 button:has([data-workbench-entry]) [class*="panelTitle"] { font-size:15px; font-weight:650; line-height:20px; }
 button:has([data-workbench-entry]) [class*="panelTitle"]::after { content:"项目 · 任务 · 用量"; display:block; font-size:9.5px; font-weight:400; line-height:12px; color:var(--dsw-alias-label-tertiary,#8a929e); letter-spacing:0; }
+button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
+.pw-sidebar-entry-icon { position:relative; display:inline-flex; align-items:center; justify-content:center; }
+.pw-sidebar-badge { position:absolute; top:-8px; right:-11px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:var(--dsw-alias-state-error-primary,#d32f2f); color:#fff; font-size:9px; font-weight:700; line-height:16px; text-align:center; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 0 2px var(--dsw-specific-sidebar-fill,#fff); pointer-events:none; }
 .pw-page { width:100%; max-width:none; margin:0; }
 .pw-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px; }
 .pw-head h1 { margin:0; font-size:20px; font-weight:650; letter-spacing:.2px; }
@@ -1715,23 +1718,50 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 		}
 
 		function PanelIcon({ size = 18 }) {
+			const [pendingCount, setPendingCount] = useState(0);
+			useEffect(() => {
+				let cancelled = false;
+				const load = async () => {
+					try {
+						const data = await api("/badge");
+						if (!cancelled) setPendingCount(Math.max(0, Number(data?.needsYou ?? 0)));
+					} catch {
+						/* keep previous count */
+					}
+				};
+				void load();
+				const timer = setInterval(() => void load(), 30_000);
+				const onFocus = () => void load();
+				window.addEventListener("focus", onFocus);
+				return () => {
+					cancelled = true;
+					clearInterval(timer);
+					window.removeEventListener("focus", onFocus);
+				};
+			}, []);
 			return h(
-				"svg",
-				{
-					width: size,
-					height: size,
-					viewBox: "0 0 24 24",
-					fill: "none",
-					stroke: "currentColor",
-					strokeWidth: 1.7,
-					strokeLinecap: "round",
-					strokeLinejoin: "round",
-					"aria-hidden": "true",
-					"data-workbench-entry": "true",
-				},
-				h("path", { d: "M3.5 7.5A2.5 2.5 0 0 1 6 5h3l1.8 2H18a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5z" }),
-				h("path", { d: "M7.5 11.5h4M7.5 14.5h6.5" }),
-				h("path", { d: "M15.5 10.5v5" }),
+				"span",
+				{ className: "pw-sidebar-entry-icon", "data-workbench-entry": "true" },
+				h(
+					"svg",
+					{
+						width: size,
+						height: size,
+						viewBox: "0 0 24 24",
+						fill: "none",
+						stroke: "currentColor",
+						strokeWidth: 1.7,
+						strokeLinecap: "round",
+						strokeLinejoin: "round",
+						"aria-hidden": "true",
+					},
+					h("path", { d: "M3.5 7.5A2.5 2.5 0 0 1 6 5h3l1.8 2H18a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5z" }),
+					h("path", { d: "M7.5 11.5h4M7.5 14.5h6.5" }),
+					h("path", { d: "M9.5 7.5V5.5M14.5 7.5V5.5" }),
+				),
+				pendingCount > 0
+					? h("span", { className: "pw-sidebar-badge", title: `${pendingCount} 个任务待处理` }, pendingCount > 99 ? "99+" : String(pendingCount))
+					: null,
 			);
 		}
 

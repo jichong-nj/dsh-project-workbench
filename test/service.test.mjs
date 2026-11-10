@@ -327,6 +327,23 @@ runner.test("子目标：目录、会话关联、产物上传/同步/删除", as
 	}
 });
 
+runner.test("侧边栏角标：待处理/逾期/总任务数", async () => {
+	const { service, tmp } = await makeService();
+	try {
+		const project = await service.createProject({ name: "Badge" });
+		const task = await service.createTask({ projectId: project.project.id, title: "T" });
+		const before = await service.getBadgeCounts();
+		assert.equal(before.needsYou, 0);
+		assert.equal(before.total, 1);
+		await service.addTaskComment(task.task.id, { body: "请确认" });
+		const after = await service.getBadgeCounts();
+		assert.equal(after.needsYou, 1);
+		assert.ok(after.overdue >= 0);
+	} finally {
+		await tmp.cleanup();
+	}
+});
+
 runner.test("全部任务列表：跨项目任务、状态过滤、项目名", async () => {
 	const { service, tmp } = await makeService();
 	try {

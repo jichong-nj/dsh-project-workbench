@@ -128,6 +128,10 @@ runner.test("项目 CRUD：创建 → 列表 → 详情 → 归档 → 恢复 �
 		assert.equal(deleted.status, 200);
 		assert.equal(deleted.json.data.deleted, true);
 	} finally {
+		const badge = await invokeRaw(handler, { path: "/badge" });
+		assert.equal(badge.status, 200);
+		assert.equal(JSON.parse(badge.text).ok, true);
+		assert.equal(typeof JSON.parse(badge.text).data.needsYou, "number");
 		const allTasks = await invokeRaw(handler, { path: "/tasks?status=all" });
 		assert.equal(allTasks.status, 200);
 		const allPayload = JSON.parse(allTasks.text);
