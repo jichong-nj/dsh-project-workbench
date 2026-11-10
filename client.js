@@ -5197,6 +5197,29 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 					View,
 				),
 			);
+			// DSH 打开后默认进入工作台，而不是空白会话。
+			try {
+				const layout = ctx.get?.("layout");
+				if (layout !== undefined && layout !== null && typeof layout.selectPanel === "function") {
+					ctx.effect(() => {
+						const activate = () => {
+							try {
+								layout.selectPanel(PANEL_ID);
+							} catch {
+								/* main panel not registered yet */
+							}
+						};
+						const first = setTimeout(activate, 0);
+						const second = setTimeout(activate, 300);
+						return () => {
+							clearTimeout(first);
+							clearTimeout(second);
+						};
+					}, "project-workbench: default main panel");
+				}
+			} catch {
+				/* layout service unavailable */
+			}
 			ctx.slots.inject("conversation.session.header.actions", () =>
 				ctx.slots.register(
 					{ name: "conversation.session.header.actions", id: "workbench-back", order: 5, locale: NS },
