@@ -1338,7 +1338,7 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-welcome-date { color:var(--pw-dim); font-size:12px; white-space:nowrap; }
 .pw-quick { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 .pw-quick .label { color:var(--pw-dim); font-size:12px; margin-right:2px; }
-.pw-chip { appearance:none; border:1px solid var(--pw-bd); background:var(--pw-bg3); color:var(--pw-fg); border-radius:999px; padding:5px 12px; font-size:12px; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
+.pw-chip { appearance:none; border:1px solid var(--pw-bd); background:var(--pw-bg3); color:var(--pw-fg); border-radius:999px; height:34px; min-height:34px; padding:0 14px; box-sizing:border-box; font-size:12px; line-height:1; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:5px; }
 .pw-chip:hover { border-color:var(--pw-acc); color:var(--pw-acc); }
 .pw-usage-card { overflow:hidden; }
 .pw-usage-body { display:flex; flex-direction:column; gap:10px; }
