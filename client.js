@@ -1156,6 +1156,7 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] svg { width:26px; heigh
 button:has([data-workbench-entry]) [class*="panelTitle"] { font-size:15px; font-weight:650; line-height:20px; }
 button:has([data-workbench-entry]) [class*="panelTitle"]::after { content:"项目 · 任务 · 用量"; display:block; font-size:9.5px; font-weight:400; line-height:12px; color:var(--dsw-alias-label-tertiary,#8a929e); letter-spacing:0; }
 button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
+[class*="panelEntry"]:has([data-workbench-entry]) [class*="panelUnpin"] { display:none !important; }
 .pw-sidebar-entry-icon { position:relative; display:inline-flex; align-items:center; justify-content:center; }
 .pw-sidebar-badge { position:absolute; top:-8px; right:-11px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:var(--dsw-alias-state-error-primary,#d32f2f); color:#fff; font-size:9px; font-weight:700; line-height:16px; text-align:center; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 0 2px var(--dsw-specific-sidebar-fill,#fff); pointer-events:none; }
 .pw-page { width:100%; max-width:none; margin:0; }
