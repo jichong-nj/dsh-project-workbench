@@ -128,6 +128,12 @@ runner.test("项目 CRUD：创建 → 列表 → 详情 → 归档 → 恢复 �
 		assert.equal(deleted.status, 200);
 		assert.equal(deleted.json.data.deleted, true);
 	} finally {
+		const savedHistory = await invoke(handler, { path: "/assistant/history", method: "PUT", body: { messages: [{ role: "user", content: "hi" }, { role: "assistant", content: "hello" }] } });
+		assert.equal(savedHistory.status, 200);
+		const loadedHistory = await invoke(handler, { path: "/assistant/history" });
+		assert.equal(loadedHistory.json.data.messages.length, 2);
+		const clearedHistory = await invoke(handler, { path: "/assistant/history", method: "DELETE" });
+		assert.equal(clearedHistory.json.data.cleared, true);
 		const badge = await invokeRaw(handler, { path: "/badge" });
 		assert.equal(badge.status, 200);
 		assert.equal(JSON.parse(badge.text).ok, true);

@@ -2050,6 +2050,38 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 				setTimeout(() => setNotice(null), 3200);
 			}, []);
 
+			useEffect(() => {
+				let cancelled = false;
+				api("/assistant/history")
+					.then((data) => {
+						if (!cancelled && Array.isArray(data?.messages) && data.messages.length > 0) setAssistantMessages(data.messages);
+					})
+					.catch(() => undefined);
+				return () => {
+					cancelled = true;
+				};
+			}, []);
+
+			const persistAssistant = useCallback(async (messages) => {
+				try {
+					await api("/assistant/history", { method: "PUT", body: { messages } });
+				} catch {
+					/* 本地会话仍可继续使用 */
+				}
+			}, []);
+
+			const newAssistantSession = useCallback(async () => {
+				if (typeof window !== "undefined" && typeof window.confirm === "function" && !window.confirm(t("dashboard.assistant.newSessionConfirm"))) return;
+				try {
+					await api("/assistant/history", { method: "DELETE" });
+				} catch {
+					/* ignore */
+				}
+				setAssistantMessages([{ role: "assistant", content: t("dashboard.assistant.welcome") }]);
+				setAssistantText("");
+				setVoicePhase("idle");
+			}, []);
+
 			const dashboard = state.data;
 			const canEmbedChat = typeof renderSlot === "function";
 
@@ -2060,25 +2092,30 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 					const history = assistantMessages.map((item) => ({ role: item.role, content: item.content }));
 					const nextMessages = [...assistantMessages, { role: "user", content: message }];
 					setAssistantMessages(nextMessages);
+					void persistAssistant(nextMessages);
 					setAssistantText("");
 					setAssistantBusy(true);
 					try {
 						const data = await api("/assistant/chat", { method: "POST", body: { message, history } });
-						setAssistantMessages([
+						const finalMessages = [
 							...nextMessages,
 							{ role: "assistant", content: data?.reply ?? "", actions: Array.isArray(data?.actions) ? data.actions : [] },
-						]);
+						];
+						setAssistantMessages(finalMessages);
+						void persistAssistant(finalMessages);
 						if (Array.isArray(data?.actions) && data.actions.length > 0) void load();
 					} catch (error) {
-						setAssistantMessages([
+						const finalMessages = [
 							...nextMessages,
 							{ role: "assistant", content: `${t("dashboard.assistant.failed")}：${errorText(error)}`, error: true },
-						]);
+						];
+						setAssistantMessages(finalMessages);
+						void persistAssistant(finalMessages);
 					} finally {
 						setAssistantBusy(false);
 					}
 				},
-				[assistantText, assistantMessages, assistantBusy, load],
+				[assistantText, assistantMessages, assistantBusy, load, persistAssistant],
 			);
 
 			const toggleVoice = useCallback(async () => {
@@ -2420,6 +2457,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 							h("div", { className: "pw-assistant-avatar" }, "AI"),
 							h("div", null, h("b", null, t("dashboard.assistant.title")), h("span", null, t("dashboard.assistant.subtitle"))),
 							h("span", { className: "pw-spacer" }),
+							h("button", { type: "button", className: "pw-btn small ghost", onClick: () => void newAssistantSession() }, t("dashboard.assistant.newSession")),
 							h("button", { type: "button", className: "pw-btn small ghost", title: t("dashboard.assistant.fullChatHint"), onClick: () => void openFullChat() }, t("dashboard.assistant.fullChat")),
 						),
 						canEmbedChat

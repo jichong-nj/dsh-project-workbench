@@ -344,6 +344,26 @@ runner.test("侧边栏角标：待处理/逾期/总任务数", async () => {
 	}
 });
 
+runner.test("首页 AI 助手会话：保存、刷新后读取、清空", async () => {
+	const { service, tmp } = await makeService();
+	try {
+		const saved = await service.saveAssistantHistory([
+			{ role: "user", content: "你好" },
+			{ role: "assistant", content: "你好，工作台助手", actions: [{ tool: "workbench_get_dashboard", ok: true }] },
+		]);
+		assert.equal(saved.messages.length, 2);
+		const loaded = await service.getAssistantHistory();
+		assert.equal(loaded.messages.length, 2);
+		assert.equal(loaded.messages[1].content, "你好，工作台助手");
+		assert.equal(loaded.messages[1].actions.length, 1);
+		const cleared = await service.clearAssistantHistory();
+		assert.equal(cleared.cleared, true);
+		assert.equal((await service.getAssistantHistory()).messages.length, 0);
+	} finally {
+		await tmp.cleanup();
+	}
+});
+
 runner.test("全部任务列表：跨项目任务、状态过滤、项目名", async () => {
 	const { service, tmp } = await makeService();
 	try {
