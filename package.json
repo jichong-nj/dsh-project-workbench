@@ -1,6 +1,6 @@
 {
   "name": "@jichong/dsh-project-workbench",
-  "version": "0.15.0",
+  "version": "0.15.1",
   "description": "Project → Task personal workbench for DeepSeek Harness Web: two-level projects/tasks, derived needs-you column, layered AGENTS.md skeletons and an HTTP-backed kanban UI",
   "license": "MIT",
   "author": "jichong-nj",
@@ -53,11 +53,11 @@
     "zod": "^4.4.3"
   },
   "peerDependencies": {
-    "@deepseek-ai/cordis": "~4.0.5",
-    "@deepseek-ai/dsh-storage-domain": "0.2.1-rc.5",
-    "@deepseek-ai/dsh-tools": "0.2.1-rc.5",
+    "@deepseek-ai/cordis": "^4.0.5",
+    "@deepseek-ai/dsh-storage-domain": ">=0.2.1-rc.5 <0.3.0",
+    "@deepseek-ai/dsh-tools": ">=0.2.1-rc.5 <0.3.0",
     "react": "^18.2.0",
-    "@deepseek-ai/dsh-llm": "0.2.1-rc.5"
+    "@deepseek-ai/dsh-llm": ">=0.2.1-rc.5 <0.3.0"
   },
   "repository": {
     "type": "git",
