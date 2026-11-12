@@ -21,7 +21,8 @@
     ".": "./index.js",
     "./client": "./client.js",
     "./package.json": "./package.json",
-    "./icon": "./icon.svg"
+    "./icon": "./icon.svg",
+    "./logo": "./logo.svg"
   },
   "files": [
     "index.js",
@@ -30,7 +31,8 @@
     "cordis.patch.yml",
     "README.md",
     "CONTRACTS.md",
-    "icon.svg"
+    "icon.svg",
+    "logo.svg"
   ],
   "dsh": {
     "manifestVersion": 1,

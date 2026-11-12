@@ -1,5 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-  <path d="M3.5 7.5A2.5 2.5 0 0 1 6 5h3l1.8 2H18a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 18 19H6a2.5 2.5 0 0 1-2.5-2.5z"/>
-  <path d="M7.5 11.5h4M7.5 14.5h6.5"/>
-  <path d="M15.5 10.5v5"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="项目工作台">
+  <title>项目工作台</title>
+  <g><rect x="3.5" y="4.5" width="7.2" height="6" rx="1.4"/>
+<rect x="13.3" y="4.5" width="7.2" height="6" rx="1.4"/>
+<rect x="3.5" y="13" width="7.2" height="6.5" rx="1.4"/>
+<path d="M13.5 13.5h7M13.5 16.5h5.2"/></g>
+  <circle cx="20.5" cy="3.5" r="1" fill="currentColor" stroke="none" opacity=".9"/>
 </svg>
