@@ -91,6 +91,8 @@ window.__ModuleLoader__.load({
 			"dashboard.assistant.fullChat": "标准聊天",
 			"dashboard.assistant.fullChatHint": "在标准会话中继续（附件/命令/完整聊天能力）",
 			"dashboard.assistant.fullChatOpened": "已在标准会话中打开",
+			"dashboard.assistant.newSession": "新会话",
+			"dashboard.assistant.newSessionConfirm": "清空当前助手会话并开始新会话？",
 			"dashboard.assistant.suggest1": "今天做了什么？",
 			"dashboard.assistant.suggest2": "帮我拆解任务",
 			"dashboard.assistant.suggest3": "生成本周周报",
@@ -422,6 +424,8 @@ window.__ModuleLoader__.load({
 			"dashboard.assistant.fullChat": "Full chat",
 			"dashboard.assistant.fullChatHint": "Continue in a standard session (attachments, commands, full chat capabilities)",
 			"dashboard.assistant.fullChatOpened": "Opened in a standard session",
+			"dashboard.assistant.newSession": "New chat",
+			"dashboard.assistant.newSessionConfirm": "Clear the current assistant conversation and start a new one?",
 			"dashboard.assistant.suggest1": "What did I do today?",
 			"dashboard.assistant.suggest2": "Split a task for me",
 			"dashboard.assistant.suggest3": "Generate weekly report",
@@ -1455,10 +1459,13 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 .pw-recent-item .main b { font-size:12px; font-weight:600; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .pw-recent-item .main span { color:var(--pw-dim); font-size:10.5px; display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .pw-assistant { position:sticky; top:14px; height:calc(100vh - 250px); min-height:420px; max-height:820px; display:flex; flex-direction:column; background:var(--pw-bg3); border:1px solid var(--pw-bd); border-radius:14px; overflow:hidden; }
-.pw-assistant-head { padding:13px 15px; border-bottom:1px solid var(--pw-bd3); display:flex; gap:9px; align-items:center; }
-.pw-assistant-avatar { width:30px; height:30px; border-radius:50%; background:color-mix(in srgb,var(--pw-acc) 16%,var(--pw-bg3)); color:var(--pw-acc); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; }
-.pw-assistant-head b { display:block; font-size:12.5px; }
-.pw-assistant-head span { display:block; color:var(--pw-dim); font-size:10.5px; }
+.pw-assistant-head { padding:13px 15px; border-bottom:1px solid var(--pw-bd3); display:flex; gap:9px; align-items:center; flex-wrap:wrap; }
+.pw-assistant-avatar { width:30px; height:30px; border-radius:50%; background:color-mix(in srgb,var(--pw-acc) 16%,var(--pw-bg3)); color:var(--pw-acc); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex:none; }
+.pw-assistant-head-info { flex:1; min-width:120px; overflow:hidden; }
+.pw-assistant-head-info b { display:block; font-size:12.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pw-assistant-head-info span { display:block; color:var(--pw-dim); font-size:10.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pw-assistant-head-actions { display:flex; align-items:center; gap:5px; flex:none; margin-left:auto; }
+.pw-assistant-head-actions .pw-btn { white-space:nowrap; }
 .pw-assistant-body { flex:1; min-height:0; overflow:auto; padding:12px 14px; display:flex; flex-direction:column; gap:10px; }
 .pw-assistant-bubble { background:color-mix(in srgb,var(--pw-acc) 7%,var(--pw-bg1)); border:1px solid color-mix(in srgb,var(--pw-acc) 12%,var(--pw-bd3)); border-radius:10px; padding:10px 11px; font-size:12px; line-height:1.6; color:var(--pw-mut); white-space:pre-wrap; }
 .pw-assistant-suggest { display:flex; flex-wrap:wrap; gap:6px; }
@@ -2455,10 +2462,13 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 							"div",
 							{ className: "pw-assistant-head" },
 							h("div", { className: "pw-assistant-avatar" }, "AI"),
-							h("div", null, h("b", null, t("dashboard.assistant.title")), h("span", null, t("dashboard.assistant.subtitle"))),
-							h("span", { className: "pw-spacer" }),
-							h("button", { type: "button", className: "pw-btn small ghost", onClick: () => void newAssistantSession() }, t("dashboard.assistant.newSession")),
-							h("button", { type: "button", className: "pw-btn small ghost", title: t("dashboard.assistant.fullChatHint"), onClick: () => void openFullChat() }, t("dashboard.assistant.fullChat")),
+							h("div", { className: "pw-assistant-head-info" }, h("b", null, t("dashboard.assistant.title")), h("span", null, t("dashboard.assistant.subtitle"))),
+							h(
+								"div",
+								{ className: "pw-assistant-head-actions" },
+								h("button", { type: "button", className: "pw-btn small ghost", onClick: () => void newAssistantSession() }, t("dashboard.assistant.newSession")),
+								h("button", { type: "button", className: "pw-btn small ghost", title: t("dashboard.assistant.fullChatHint"), onClick: () => void openFullChat() }, t("dashboard.assistant.fullChat")),
+							),
 						),
 						canEmbedChat
 							? h(
