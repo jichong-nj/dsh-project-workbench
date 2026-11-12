@@ -1467,6 +1467,10 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 .pw-assistant-head-actions { display:flex; align-items:center; gap:5px; flex:none; margin-left:auto; }
 .pw-assistant-head-actions .pw-btn { white-space:nowrap; }
 .pw-assistant-body { flex:1; min-height:0; overflow:auto; padding:12px 14px; display:flex; flex-direction:column; gap:10px; }
+.pw-assistant-modelbar { display:flex; align-items:center; gap:7px; padding:7px 12px; border-bottom:1px solid var(--pw-bd3); background:var(--pw-bg2); }
+.pw-assistant-modelbar .label { font-size:11px; color:var(--pw-dim); flex:none; }
+.pw-assistant-modelbar select { flex:1; min-width:0; height:28px; border:1px solid var(--pw-bd3); border-radius:7px; background:var(--pw-bg3); color:var(--pw-fg); font-size:11.5px; padding:0 7px; }
+.pw-assistant-modelbar .current { display:none; }
 .pw-assistant-bubble { background:color-mix(in srgb,var(--pw-acc) 7%,var(--pw-bg1)); border:1px solid color-mix(in srgb,var(--pw-acc) 12%,var(--pw-bd3)); border-radius:10px; padding:10px 11px; font-size:12px; line-height:1.6; color:var(--pw-mut); white-space:pre-wrap; }
 .pw-assistant-suggest { display:flex; flex-wrap:wrap; gap:6px; }
 .pw-assistant-msg { display:flex; flex-direction:column; gap:3px; max-width:94%; }
@@ -2031,6 +2035,9 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 			const [assistantText, setAssistantText] = useState("");
 			const [assistantBusy, setAssistantBusy] = useState(false);
 			const [assistantMessages, setAssistantMessages] = useState([{ role: "assistant", content: t("dashboard.assistant.welcome") }]);
+			const [assistantModelGroups, setAssistantModelGroups] = useState([]);
+			const [assistantSelection, setAssistantSelection] = useState(null);
+			const [assistantModelLoading, setAssistantModelLoading] = useState(true);
 			const [recording, setRecording] = useState(false);
 			const [voiceBusy, setVoiceBusy] = useState(false);
 			const [voiceLevel, setVoiceLevel] = useState(0);
@@ -2059,23 +2066,41 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 
 			useEffect(() => {
 				let cancelled = false;
-				api("/assistant/history")
-					.then((data) => {
-						if (!cancelled && Array.isArray(data?.messages) && data.messages.length > 0) setAssistantMessages(data.messages);
-					})
-					.catch(() => undefined);
+				Promise.all([
+					api("/assistant/history").catch(() => null),
+					api("/assistant/models").catch(() => null),
+				]).then(([history, models]) => {
+					if (cancelled) return;
+					if (Array.isArray(history?.messages) && history.messages.length > 0) setAssistantMessages(history.messages);
+					if (Array.isArray(models?.providers)) setAssistantModelGroups(models.providers);
+					const savedSelection = history?.selection;
+					if (savedSelection !== null && savedSelection !== undefined && typeof savedSelection.provider === "string" && typeof savedSelection.model === "string") {
+						setAssistantSelection(savedSelection);
+					} else if (models?.default !== undefined && models?.default !== null) {
+						setAssistantSelection(models.default);
+					}
+					setAssistantModelLoading(false);
+				});
 				return () => {
 					cancelled = true;
 				};
 			}, []);
 
-			const persistAssistant = useCallback(async (messages) => {
+			const persistAssistant = useCallback(async (messages, selection = assistantSelection) => {
 				try {
-					await api("/assistant/history", { method: "PUT", body: { messages } });
+					await api("/assistant/history", { method: "PUT", body: { messages, selection } });
 				} catch {
 					/* 本地会话仍可继续使用 */
 				}
-			}, []);
+			}, [assistantSelection]);
+
+			const changeAssistantModel = useCallback((key) => {
+				const [provider, model] = String(key).split("::");
+				if (provider === "" || model === "") return;
+				const next = { provider, model };
+				setAssistantSelection(next);
+				void persistAssistant(assistantMessages, next);
+			}, [assistantMessages, persistAssistant]);
 
 			const newAssistantSession = useCallback(async () => {
 				if (typeof window !== "undefined" && typeof window.confirm === "function" && !window.confirm(t("dashboard.assistant.newSessionConfirm"))) return;
@@ -2087,7 +2112,8 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 				setAssistantMessages([{ role: "assistant", content: t("dashboard.assistant.welcome") }]);
 				setAssistantText("");
 				setVoicePhase("idle");
-			}, []);
+				void persistAssistant([], assistantSelection);
+			}, [assistantSelection, persistAssistant]);
 
 			const dashboard = state.data;
 			const canEmbedChat = typeof renderSlot === "function";
@@ -2103,7 +2129,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 					setAssistantText("");
 					setAssistantBusy(true);
 					try {
-						const data = await api("/assistant/chat", { method: "POST", body: { message, history } });
+						const data = await api("/assistant/chat", { method: "POST", body: { message, history, selection: assistantSelection } });
 						const finalMessages = [
 							...nextMessages,
 							{ role: "assistant", content: data?.reply ?? "", actions: Array.isArray(data?.actions) ? data.actions : [] },
@@ -2122,7 +2148,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 						setAssistantBusy(false);
 					}
 				},
-				[assistantText, assistantMessages, assistantBusy, load, persistAssistant],
+				[assistantText, assistantMessages, assistantBusy, assistantSelection, load, persistAssistant],
 			);
 
 			const toggleVoice = useCallback(async () => {
@@ -2469,6 +2495,28 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 								h("button", { type: "button", className: "pw-btn small ghost", onClick: () => void newAssistantSession() }, t("dashboard.assistant.newSession")),
 								h("button", { type: "button", className: "pw-btn small ghost", title: t("dashboard.assistant.fullChatHint"), onClick: () => void openFullChat() }, t("dashboard.assistant.fullChat")),
 							),
+						),
+						h(
+							"div",
+							{ className: "pw-assistant-modelbar" },
+							h("span", { className: "label" }, "模型"),
+							h(
+								"select",
+								{
+									value: assistantSelection === null ? "" : `${assistantSelection.provider}::${assistantSelection.model}`,
+									disabled: assistantModelLoading || assistantModelGroups.length === 0,
+									onChange: (event) => changeAssistantModel(event.target.value),
+								},
+								assistantSelection === null ? h("option", { value: "" }, assistantModelLoading ? "读取模型…" : "未找到模型") : null,
+								assistantModelGroups.map((group) =>
+									h(
+										"optgroup",
+										{ key: group.id, label: group.name },
+										(group.models ?? []).map((model) => h("option", { key: `${group.id}::${model.id}`, value: `${group.id}::${model.id}` }, `${model.name}（${group.name}）`)),
+									),
+								),
+							),
+							assistantSelection === null ? null : h("span", { className: "current" }, `${assistantSelection.provider} / ${assistantSelection.model}`),
 						),
 						canEmbedChat
 							? h(
