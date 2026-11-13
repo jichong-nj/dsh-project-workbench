@@ -810,6 +810,9 @@ window.__ModuleLoader__.load({
 			}
 		}
 
+		/** 工作台创建任务会话时使用的 agent preset；避免跟随全局默认预设（可能是坏掉的 tool-office）。 */
+		const TASK_SESSION_PRESETS = ["standard", "minimal"];
+
 		/** 在工作台默认工作区创建 DSH 会话；返回 sessionId。 */
 		async function createDshSessionInWorkspace(workspacePath, title = "") {
 			const uiWorkspace = rootClientCtx?.get?.("uiWorkspace");
@@ -838,8 +841,19 @@ window.__ModuleLoader__.load({
 				await uiWorkspace.workspaces.rename(workspaceId, title).catch(() => undefined);
 			}
 			if (typeof uiWorkspace.createNamed !== "function") throw new Error("当前界面不支持直接在工作区创建会话");
-			const sessionId = await uiWorkspace.createNamed({ workspaceId });
-			if (typeof sessionId !== "string" || sessionId === "") throw new Error("创建会话未返回 sessionId");
+			let sessionId = null;
+			let lastError = null;
+			for (const agentPreset of TASK_SESSION_PRESETS) {
+				try {
+					sessionId = await uiWorkspace.createNamed({ workspaceId, agentPreset });
+					break;
+				} catch (error) {
+					lastError = error;
+				}
+			}
+			if (typeof sessionId !== "string" || sessionId === "") {
+				throw lastError ?? new Error("创建会话未返回 sessionId");
+			}
 			return { sessionId, cwd: workspacePath };
 		}
 
