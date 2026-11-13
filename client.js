@@ -194,6 +194,7 @@ window.__ModuleLoader__.load({
 			"project.stats.unresolved": "未解决评论",
 			"project.stats.overdue": "已逾期",
 			"project.stats.toggle": "统计",
+			"project.paths.toggle": "路径",
 			"project.filter.all": "全部",
 			"project.filter.backlog": "Backlog",
 			"project.filter.running": "Running",
@@ -527,6 +528,7 @@ window.__ModuleLoader__.load({
 			"project.stats.unresolved": "Unresolved comments",
 			"project.stats.overdue": "Overdue",
 			"project.stats.toggle": "Stats",
+			"project.paths.toggle": "Paths",
 			"project.filter.all": "All",
 			"project.filter.backlog": "Backlog",
 			"project.filter.running": "Running",
@@ -1245,8 +1247,12 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-breadcrumb .sep { color:var(--pw-bd); }
 .pw-project-head { background:var(--pw-bg3); border:1px solid var(--pw-bd); border-radius:var(--pw-radius); padding:16px 18px; margin-bottom:14px; }
 .pw-project-head-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+.pw-project-identity { display:flex; align-items:flex-start; gap:11px; min-width:0; flex:1; }
+.pw-project-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex:none; background:color-mix(in srgb,var(--pw-acc) 12%,var(--pw-bg3)); font-size:19px; }
+.pw-project-identity-body { min-width:0; flex:1; }
+.pw-project-paths { display:flex; flex-direction:column; gap:5px; margin-top:10px; padding-top:10px; border-top:1px solid var(--pw-bd3); }
 .pw-project-head h2 { margin:0; font-size:17px; font-weight:650; }
-.pw-project-head .desc { margin:6px 0 10px; color:var(--pw-mut); font-size:12.5px; white-space:pre-wrap; }
+.pw-project-head .desc { margin:5px 0 0; color:var(--pw-mut); font-size:12.5px; white-space:pre-wrap; }
 .pw-info-line { display:flex; align-items:center; gap:6px; color:var(--pw-dim); font-size:11.5px; flex-wrap:wrap; margin-top:4px; }
 .pw-tabs { display:flex; align-items:center; gap:2px; border-bottom:1px solid var(--pw-bd); margin-bottom:14px; }
 .pw-tab { appearance:none; border:none; border-bottom:2px solid transparent; background:transparent; color:var(--pw-mut);
@@ -3188,6 +3194,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 			const [filter, setFilter] = useState("all");
 			const [tab, setTab] = useState("list");
 			const [statsOpen, setStatsOpen] = useState(false);
+			const [pathsOpen, setPathsOpen] = useState(false);
 			const [state, setState] = useState({ loading: true, data: null, error: null });
 			const [createOpen, setCreateOpen] = useState(false);
 			const [notice, setNotice] = useState(null);
@@ -3302,28 +3309,41 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 										{ className: "pw-project-head-top" },
 										h(
 											"div",
-											null,
-											h("h2", null, project.name),
-											archived ? h(Badge, { tone: "warn" }, t("projects.archivedBadge")) : null,
-											h("div", { className: "desc" }, project.description === "" ? t("common.none") : project.description),
-											state.data?.workbenchRoot
-												? h(CopyChip, { text: state.data.workbenchRoot, label: `${t("projects.workbenchRoot")}：` })
-												: null,
-											h(CopyChip, { text: project.rootPath, label: `${t("project.folder")}：` }),
-											instructions === null
-												? null
-												: h(CopyChip, {
-														text: instructions.project.path,
-														label: `${t("projects.agentsMd")}：`,
-													}),
+											{ className: "pw-project-identity" },
+											h("div", { className: "pw-project-icon", "aria-hidden": "true" }, "📁"),
+											h(
+												"div",
+												{ className: "pw-project-identity-body" },
+												h("h2", null, project.name),
+												archived ? h(Badge, { tone: "warn" }, t("projects.archivedBadge")) : null,
+												h("div", { className: "desc" }, project.description === "" ? t("common.none") : project.description),
+											),
 										),
 										h(
 											"div",
 											{ className: "pw-actions" },
+											h(Button, { small: true, onClick: () => setPathsOpen((value) => !value) }, `📁 ${t("project.paths.toggle")}`),
+											h(Button, { small: true, onClick: () => setStatsOpen((value) => !value) }, `📊 ${t("project.stats.toggle")}`),
 											h(Button, { disabled: busy, onClick: archiveOrRestore }, archived ? t("projects.restore") : t("projects.archive")),
 											archived && (stats.total ?? 0) === 0 ? h(Button, { kind: "danger", disabled: busy, onClick: deleteProject }, t("projects.deleteEmpty")) : null,
 										),
 									),
+									pathsOpen
+										? h(
+												"div",
+												{ className: "pw-project-paths" },
+												state.data?.workbenchRoot
+													? h(CopyChip, { text: state.data.workbenchRoot, label: `${t("projects.workbenchRoot")}：` })
+													: null,
+												h(CopyChip, { text: project.rootPath, label: `${t("project.folder")}：` }),
+												instructions === null
+													? null
+													: h(CopyChip, {
+															text: instructions.project.path,
+															label: `${t("projects.agentsMd")}：`,
+														}),
+											)
+										: null,
 									statsOpen
 										? h(
 												"div",
