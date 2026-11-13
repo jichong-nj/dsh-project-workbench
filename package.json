@@ -1,6 +1,6 @@
 {
   "name": "@jichong/dsh-project-workbench",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "description": "Project → Task personal workbench for DeepSeek Harness Web: two-level projects/tasks, derived needs-you column, layered AGENTS.md skeletons and an HTTP-backed kanban UI",
   "license": "MIT",
   "author": "jichong-nj",

@@ -193,6 +193,7 @@ window.__ModuleLoader__.load({
 			"project.stats.blocked": "阻塞",
 			"project.stats.unresolved": "未解决评论",
 			"project.stats.overdue": "已逾期",
+			"project.stats.toggle": "统计",
 			"project.filter.all": "全部",
 			"project.filter.backlog": "Backlog",
 			"project.filter.running": "Running",
@@ -525,6 +526,7 @@ window.__ModuleLoader__.load({
 			"project.stats.blocked": "Blocked",
 			"project.stats.unresolved": "Unresolved comments",
 			"project.stats.overdue": "Overdue",
+			"project.stats.toggle": "Stats",
 			"project.filter.all": "All",
 			"project.filter.backlog": "Backlog",
 			"project.filter.running": "Running",
@@ -3185,6 +3187,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 		function ProjectView({ projectId, onBack, onHome }) {
 			const [filter, setFilter] = useState("all");
 			const [tab, setTab] = useState("list");
+			const [statsOpen, setStatsOpen] = useState(false);
 			const [state, setState] = useState({ loading: true, data: null, error: null });
 			const [createOpen, setCreateOpen] = useState(false);
 			const [notice, setNotice] = useState(null);
@@ -3321,17 +3324,19 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 											archived && (stats.total ?? 0) === 0 ? h(Button, { kind: "danger", disabled: busy, onClick: deleteProject }, t("projects.deleteEmpty")) : null,
 										),
 									),
-									h(
-										"div",
-										{ className: "pw-stats", style: { marginTop: 12 } },
-										h(Stat, { value: stats.backlog ?? 0, label: t("project.stats.backlog") }),
-										h(Stat, { value: stats.running ?? 0, label: t("project.stats.running"), tone: "info" }),
-										h(Stat, { value: stats.needsYou ?? 0, label: t("project.stats.needsYou"), tone: "warn" }),
-										h(Stat, { value: stats.done ?? 0, label: t("project.stats.done"), tone: "success" }),
-										h(Stat, { value: stats.blocked ?? 0, label: t("project.stats.blocked") }),
-										h(Stat, { value: stats.unresolvedComments ?? 0, label: t("project.stats.unresolved") }),
-										h(Stat, { value: stats.overdue ?? 0, label: t("project.stats.overdue") }),
-									),
+									statsOpen
+										? h(
+												"div",
+												{ className: "pw-stats", style: { marginTop: 12 } },
+												h(Stat, { value: stats.backlog ?? 0, label: t("project.stats.backlog") }),
+												h(Stat, { value: stats.running ?? 0, label: t("project.stats.running"), tone: "info" }),
+												h(Stat, { value: stats.needsYou ?? 0, label: t("project.stats.needsYou"), tone: "warn" }),
+												h(Stat, { value: stats.done ?? 0, label: t("project.stats.done"), tone: "success" }),
+												h(Stat, { value: stats.blocked ?? 0, label: t("project.stats.blocked") }),
+												h(Stat, { value: stats.unresolvedComments ?? 0, label: t("project.stats.unresolved") }),
+												h(Stat, { value: stats.overdue ?? 0, label: t("project.stats.overdue") }),
+											)
+										: null,
 									archived ? h("div", { className: "pw-toast warn", style: { marginTop: 12, marginBottom: 0 } }, t("project.archivedReadonly")) : null,
 								),
 								h(
