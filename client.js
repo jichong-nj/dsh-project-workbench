@@ -1258,7 +1258,9 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-tab { appearance:none; border:none; border-bottom:2px solid transparent; background:transparent; color:var(--pw-mut);
   padding:7px 12px; font-size:12.5px; cursor:pointer; margin-bottom:-1px; }
 .pw-tab.active { color:var(--pw-fg); border-bottom-color:var(--pw-acc); font-weight:600; }
-.pw-task-list { display:flex; flex-direction:column; gap:8px; }
+.pw-task-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; align-items:stretch; }
+@media (max-width: 1100px) { .pw-task-list { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media (max-width: 700px) { .pw-task-list { grid-template-columns:1fr; } }
 .pw-task-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center;
   background:var(--pw-bg3); border:1px solid var(--pw-bd); border-radius:8px; padding:9px 12px; cursor:pointer; }
 .pw-task-row:hover { border-color:var(--pw-acc); }
