@@ -1269,6 +1269,17 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-task-sub { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .pw-task-reasons { color:var(--pw-amber); font-size:11px; }
 .pw-task-open-hint { color:var(--pw-dim); font-size:10.5px; }
+.pw-activity-strip { display:flex; align-items:center; gap:3px; margin-top:4px; min-height:12px; }
+.pw-activity-strip .label { color:var(--pw-dim); font-size:9px; white-space:nowrap; margin-right:1px; }
+.pw-activity-strip .total { color:var(--pw-dim); font-size:9px; margin-left:2px; min-width:8px; }
+.pw-activity-cell { width:9px; height:9px; border-radius:2px; background:var(--pw-bg2); border:1px solid color-mix(in srgb,var(--pw-bd3) 70%,transparent); flex:none; }
+.pw-activity-cell.l1 { background:color-mix(in srgb,var(--pw-acc) 22%,var(--pw-bg3)); }
+.pw-activity-cell.l2 { background:color-mix(in srgb,var(--pw-acc) 42%,var(--pw-bg3)); }
+.pw-activity-cell.l3 { background:color-mix(in srgb,var(--pw-acc) 68%,var(--pw-bg3)); }
+.pw-activity-cell.l4 { background:var(--pw-acc); }
+.pw-activity-cell.today { outline:1px solid var(--pw-acc); outline-offset:1px; }
+.pw-activity-strip.compact { margin-top:2px; }
+.pw-activity-strip.compact .label { display:none; }
 .pw-task-side { display:flex; align-items:center; gap:6px; }
 .pw-board { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; align-items:start; }
 @media (max-width: 980px) { .pw-board { grid-template-columns:repeat(2,minmax(0,1fr)); } }
@@ -1292,6 +1303,17 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-task-layout { display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:14px; align-items:start; }
 @media (max-width: 1000px) { .pw-task-layout { grid-template-columns:1fr; } }
 .pw-task-main, .pw-task-open-hint { color:var(--pw-dim); font-size:10.5px; }
+.pw-activity-strip { display:flex; align-items:center; gap:3px; margin-top:4px; min-height:12px; }
+.pw-activity-strip .label { color:var(--pw-dim); font-size:9px; white-space:nowrap; margin-right:1px; }
+.pw-activity-strip .total { color:var(--pw-dim); font-size:9px; margin-left:2px; min-width:8px; }
+.pw-activity-cell { width:9px; height:9px; border-radius:2px; background:var(--pw-bg2); border:1px solid color-mix(in srgb,var(--pw-bd3) 70%,transparent); flex:none; }
+.pw-activity-cell.l1 { background:color-mix(in srgb,var(--pw-acc) 22%,var(--pw-bg3)); }
+.pw-activity-cell.l2 { background:color-mix(in srgb,var(--pw-acc) 42%,var(--pw-bg3)); }
+.pw-activity-cell.l3 { background:color-mix(in srgb,var(--pw-acc) 68%,var(--pw-bg3)); }
+.pw-activity-cell.l4 { background:var(--pw-acc); }
+.pw-activity-cell.today { outline:1px solid var(--pw-acc); outline-offset:1px; }
+.pw-activity-strip.compact { margin-top:2px; }
+.pw-activity-strip.compact .label { display:none; }
 .pw-task-side { display:flex; flex-direction:column; gap:12px; }
 .pw-task-head { background:var(--pw-bg3); border:1px solid var(--pw-bd); border-radius:var(--pw-radius); padding:16px 18px; }
 .pw-task-head h2 { margin:0 0 6px; font-size:17px; font-weight:650; line-height:1.4; word-break:break-word; }
@@ -1606,6 +1628,17 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 @keyframes pw-mic-pulse { 0%,100% { box-shadow:0 0 0 0 color-mix(in srgb,var(--pw-red) 45%,transparent); } 50% { box-shadow:0 0 0 5px color-mix(in srgb,var(--pw-red) 0%,transparent); } }
 .pw-assistant-note { color:var(--pw-dim); font-size:10.5px; display:flex; justify-content:space-between; gap:8px; }
 @media (max-width: 640px) { .pw-root { padding:14px; } .pw-task-row { grid-template-columns:1fr; } .pw-task-open-hint { color:var(--pw-dim); font-size:10.5px; }
+.pw-activity-strip { display:flex; align-items:center; gap:3px; margin-top:4px; min-height:12px; }
+.pw-activity-strip .label { color:var(--pw-dim); font-size:9px; white-space:nowrap; margin-right:1px; }
+.pw-activity-strip .total { color:var(--pw-dim); font-size:9px; margin-left:2px; min-width:8px; }
+.pw-activity-cell { width:9px; height:9px; border-radius:2px; background:var(--pw-bg2); border:1px solid color-mix(in srgb,var(--pw-bd3) 70%,transparent); flex:none; }
+.pw-activity-cell.l1 { background:color-mix(in srgb,var(--pw-acc) 22%,var(--pw-bg3)); }
+.pw-activity-cell.l2 { background:color-mix(in srgb,var(--pw-acc) 42%,var(--pw-bg3)); }
+.pw-activity-cell.l3 { background:color-mix(in srgb,var(--pw-acc) 68%,var(--pw-bg3)); }
+.pw-activity-cell.l4 { background:var(--pw-acc); }
+.pw-activity-cell.today { outline:1px solid var(--pw-acc); outline-offset:1px; }
+.pw-activity-strip.compact { margin-top:2px; }
+.pw-activity-strip.compact .label { display:none; }
 .pw-task-side { justify-content:flex-start; } }
 `;
 
@@ -2052,6 +2085,30 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 			);
 		}
 
+		function TaskActivityStrip({ counts = [], compact = false }) {
+			const values = Array.from({ length: 7 }, (_, index) => Math.max(0, Number(counts[index] ?? 0)));
+			const today = new Date();
+			const labels = Array.from({ length: 7 }, (_, index) => {
+				const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (6 - index));
+				return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+			});
+			const level = (value) => (value <= 0 ? 0 : value <= 1 ? 1 : value <= 3 ? 2 : value <= 6 ? 3 : 4);
+			const total = values.reduce((sum, value) => sum + value, 0);
+			return h(
+				"div",
+				{ className: `pw-activity-strip${compact ? " compact" : ""}`, title: `近 7 天提问：${labels.map((label, index) => `${label} ${values[index]} 次`).join(" · ")}` },
+				h("span", { className: "label" }, "近7天"),
+				values.map((value, index) =>
+					h("span", {
+						key: labels[index],
+						className: `pw-activity-cell l${level(value)}${index === 6 ? " today" : ""}`,
+						title: `${labels[index]} · 提问 ${value} 次`,
+					}),
+				),
+				h("span", { className: "total" }, total === 0 ? "—" : String(total)),
+			);
+		}
+
 		function DashboardView({ onOpenProject, onOpenTask, onOpenProjects, onOpenTasks, renderSlot }) {
 			const [state, setState] = useState({ loading: true, data: null, error: null });
 			const [createOpen, setCreateOpen] = useState(false);
@@ -2357,6 +2414,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 						{ className: "main" },
 						h("b", null, task.title),
 						h("span", null, `${task.projectName} · 最近交互 ${relativeTime(task.lastInteractionAt ?? task.lastActivityAt)}`),
+						h(TaskActivityStrip, { counts: task.activity7d ?? [], compact: true }),
 					),
 					h(StatusBadge, { status: task.viewStatus }),
 				);
@@ -2738,6 +2796,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 												h(PriorityBadge, { priority: task.priority }),
 												h("span", { className: "pw-info-line" }, `更新于 ${relativeTime(task.updatedAt)}`),
 											),
+											h(TaskActivityStrip, { counts: task.activity7d ?? [], compact: true }),
 										),
 									),
 								),
@@ -3439,6 +3498,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 						task.childCount > 0 ? h(Badge, null, t("project.children", { n: task.childCount })) : null,
 						task.commentCount > 0 ? h(Badge, null, t("project.comments", { n: task.commentCount })) : null,
 					),
+					h(TaskActivityStrip, { counts: task.activity7d ?? [], compact: true }),
 					task.needsYouReasons?.length > 0
 						? h("div", { className: "pw-task-reasons" }, task.needsYouReasons.map(needsYouReasonText).join(" · "))
 						: null,
