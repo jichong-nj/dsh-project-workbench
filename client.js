@@ -26,6 +26,7 @@ window.__ModuleLoader__.load({
 		const ZH = {
 			"panel.title": "工作台",
 			"panel.subtitle": "项目 → 任务，按事组织而不是按目录组织",
+			"sidebar.recent.title": "最近任务",
 			"settings.title": "工作台根目录",
 			"settings.current": "当前根目录",
 			"settings.newRoot": "新的根目录",
@@ -1180,6 +1181,12 @@ button:has([data-workbench-entry]) [class*="panelTitle"]::after { content:"项�
 button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 [class*="panelEntry"]:has([data-workbench-entry]) [class*="panelUnpin"] { display:none !important; }
 .pw-sidebar-entry-icon { position:relative; display:inline-flex; align-items:center; justify-content:center; }
+.pw-side-recent { --pw-bg2:var(--dsw-alias-bg-layer-2,#f0f2f5); --pw-bg3:var(--dsw-alias-bg-layer-3,#fff); --pw-dim:var(--dsw-alias-label-tertiary,#8a929e); --pw-bd3:var(--dsw-alias-border-l3,#e6e9ef); --pw-acc:var(--dsw-alias-state-business-primary,#2f6fed); padding:8px 4px 0; margin-top:6px; border-top:1px solid var(--dsw-alias-border-l3,rgba(127,127,127,.18)); }
+.pw-side-recent-head { padding:0 7px 5px; color:var(--dsw-alias-label-tertiary,#8a929e); font-size:10px; letter-spacing:.3px; text-transform:uppercase; }
+.pw-side-task { appearance:none; width:100%; display:flex; flex-direction:column; gap:2px; align-items:stretch; text-align:left; background:transparent; color:var(--dsw-alias-label-primary,#1f2328); border:0; border-radius:7px; padding:6px 7px; cursor:pointer; font:inherit; }
+.pw-side-task:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(127,127,127,.08)); }
+.pw-side-task-title { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:11.5px; font-weight:550; }
+.pw-side-task-meta { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--dsw-alias-label-tertiary,#8a929e); font-size:10px; }
 .pw-sidebar-badge { position:absolute; top:-8px; right:-11px; min-width:16px; height:16px; padding:0 4px; border-radius:8px; background:var(--dsw-alias-state-error-primary,#d32f2f); color:#fff; font-size:9px; font-weight:700; line-height:16px; text-align:center; display:inline-flex; align-items:center; justify-content:center; box-shadow:0 0 0 2px var(--dsw-specific-sidebar-fill,#fff); pointer-events:none; }
 .pw-page { width:100%; max-width:none; margin:0; }
 .pw-head { display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:18px; }
@@ -5419,6 +5426,104 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 			};
 		}
 
+		/** 在左侧栏面板列表下方注入最近 5 个任务（含 7 天 token 热力）。 */
+		function installSidebarRecentTasks() {
+			if (typeof document === "undefined" || document.body === null) return () => undefined;
+			let disposed = false;
+			let section = null;
+			let list = null;
+			let refreshTimer = null;
+			const build = () => {
+				section = document.createElement("section");
+				section.className = "pw-side-recent";
+				section.dataset.workbenchSidebarRecent = "true";
+				const head = document.createElement("div");
+				head.className = "pw-side-recent-head";
+				head.textContent = t("sidebar.recent.title");
+				list = document.createElement("div");
+				list.className = "pw-side-recent-list";
+				section.append(head, list);
+			};
+			const render = (tasks) => {
+				if (list === null) return;
+				list.textContent = "";
+				for (const task of tasks.slice(0, 5)) {
+					const button = document.createElement("button");
+					button.type = "button";
+					button.className = "pw-side-task";
+					button.title = String(task.title ?? "");
+					const title = document.createElement("span");
+					title.className = "pw-side-task-title";
+					title.textContent = String(task.title ?? "");
+					const meta = document.createElement("span");
+					meta.className = "pw-side-task-meta";
+					meta.textContent = String(task.projectName ?? "");
+					const strip = document.createElement("span");
+					strip.className = "pw-activity-strip compact";
+					strip.title = "近 7 天 token";
+					const values = Array.from({ length: 7 }, (_, index) => Math.max(0, Number(task.activity7d?.[index] ?? 0)));
+					const peak = Math.max(...values, 1);
+					const labels = Array.from({ length: 7 }, (_, index) => {
+						const date = new Date();
+						date.setDate(date.getDate() - (6 - index));
+						return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+					});
+					for (let index = 0; index < 7; index += 1) {
+						const value = values[index];
+						const cell = document.createElement("span");
+						const level = value <= 0 ? 0 : value <= peak * 0.25 ? 1 : value <= peak * 0.5 ? 2 : value <= peak * 0.75 ? 3 : 4;
+						cell.className = `pw-activity-cell l${level}`;
+						cell.title = `${labels[index]} · ${Math.round(value).toLocaleString("zh-CN")} tokens`;
+						strip.append(cell);
+					}
+					button.append(title, meta, strip);
+					button.addEventListener("click", () => {
+						void openTaskSessionById(task.id).catch(() => undefined);
+						setTimeout(() => void load(), 800);
+					});
+					list.append(button);
+				}
+			};
+			const load = async () => {
+				try {
+					const data = await api("/dashboard");
+					if (!disposed && section?.isConnected) render(Array.isArray(data?.recentTasks) ? data.recentTasks : []);
+				} catch {
+					/* keep previous list */
+				}
+			};
+			const ensure = () => {
+				if (disposed) return;
+				if (section === null) build();
+				if (section.isConnected) return;
+				const region = document.querySelector('[class*="regionArea"]');
+				if (region !== null) region.prepend(section);
+			};
+			const observer = new MutationObserver(() => ensure());
+			observer.observe(document.body, { childList: true, subtree: true });
+			const onFocus = () => void load();
+			const onNavigate = () => {
+				ensure();
+				void load();
+			};
+			window.addEventListener("focus", onFocus);
+			window.addEventListener("workbench:navigate", onNavigate);
+			refreshTimer = setInterval(() => {
+				ensure();
+				void load();
+			}, 60_000);
+			ensure();
+			void load();
+			return () => {
+				disposed = true;
+				observer.disconnect();
+				window.removeEventListener("focus", onFocus);
+				window.removeEventListener("workbench:navigate", onNavigate);
+				if (refreshTimer !== null) clearInterval(refreshTimer);
+				section?.remove();
+			};
+		}
+
 		function apply(ctx) {
 			rootClientCtx = ctx;
 			// 应用语言（Settings › 语言）优先；没有 locale 服务时退回 navigator.language
@@ -5435,6 +5540,7 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 			}
 			ensureCss();
 			ctx.effect(() => installWorkspaceChromeHider(), "project-workbench: hide workspace chrome");
+			ctx.effect(() => installSidebarRecentTasks(), "project-workbench: sidebar recent tasks");
 			ctx.effect(() => installDefaultSessionWorkspace(ctx), "project-workbench: default session workspace");
 			ctx.slots.inject("sidebar.panellist", () =>
 				ctx.slots.register(
