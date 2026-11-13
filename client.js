@@ -1273,11 +1273,10 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-activity-strip .label { color:var(--pw-dim); font-size:9px; white-space:nowrap; margin-right:1px; }
 .pw-activity-strip .total { color:var(--pw-dim); font-size:9px; margin-left:2px; min-width:8px; }
 .pw-activity-cell { width:9px; height:9px; border-radius:2px; background:var(--pw-bg2); border:1px solid color-mix(in srgb,var(--pw-bd3) 70%,transparent); flex:none; }
-.pw-activity-cell.l1 { background:color-mix(in srgb,var(--pw-acc) 22%,var(--pw-bg3)); }
-.pw-activity-cell.l2 { background:color-mix(in srgb,var(--pw-acc) 42%,var(--pw-bg3)); }
-.pw-activity-cell.l3 { background:color-mix(in srgb,var(--pw-acc) 68%,var(--pw-bg3)); }
-.pw-activity-cell.l4 { background:var(--pw-acc); }
-.pw-activity-cell.today { outline:1px solid var(--pw-acc); outline-offset:1px; }
+.pw-activity-cell.l1 { background:#9be9a8; }
+.pw-activity-cell.l2 { background:#40c463; }
+.pw-activity-cell.l3 { background:#30a14e; }
+.pw-activity-cell.l4 { background:#216e39; }
 .pw-activity-strip.compact { margin-top:2px; }
 .pw-activity-strip.compact .label { display:none; }
 .pw-task-side { display:flex; align-items:center; gap:6px; }
@@ -1307,11 +1306,10 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-activity-strip .label { color:var(--pw-dim); font-size:9px; white-space:nowrap; margin-right:1px; }
 .pw-activity-strip .total { color:var(--pw-dim); font-size:9px; margin-left:2px; min-width:8px; }
 .pw-activity-cell { width:9px; height:9px; border-radius:2px; background:var(--pw-bg2); border:1px solid color-mix(in srgb,var(--pw-bd3) 70%,transparent); flex:none; }
-.pw-activity-cell.l1 { background:color-mix(in srgb,var(--pw-acc) 22%,var(--pw-bg3)); }
-.pw-activity-cell.l2 { background:color-mix(in srgb,var(--pw-acc) 42%,var(--pw-bg3)); }
-.pw-activity-cell.l3 { background:color-mix(in srgb,var(--pw-acc) 68%,var(--pw-bg3)); }
-.pw-activity-cell.l4 { background:var(--pw-acc); }
-.pw-activity-cell.today { outline:1px solid var(--pw-acc); outline-offset:1px; }
+.pw-activity-cell.l1 { background:#9be9a8; }
+.pw-activity-cell.l2 { background:#40c463; }
+.pw-activity-cell.l3 { background:#30a14e; }
+.pw-activity-cell.l4 { background:#216e39; }
 .pw-activity-strip.compact { margin-top:2px; }
 .pw-activity-strip.compact .label { display:none; }
 .pw-task-side { display:flex; flex-direction:column; gap:12px; }
@@ -1632,11 +1630,10 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 .pw-activity-strip .label { color:var(--pw-dim); font-size:9px; white-space:nowrap; margin-right:1px; }
 .pw-activity-strip .total { color:var(--pw-dim); font-size:9px; margin-left:2px; min-width:8px; }
 .pw-activity-cell { width:9px; height:9px; border-radius:2px; background:var(--pw-bg2); border:1px solid color-mix(in srgb,var(--pw-bd3) 70%,transparent); flex:none; }
-.pw-activity-cell.l1 { background:color-mix(in srgb,var(--pw-acc) 22%,var(--pw-bg3)); }
-.pw-activity-cell.l2 { background:color-mix(in srgb,var(--pw-acc) 42%,var(--pw-bg3)); }
-.pw-activity-cell.l3 { background:color-mix(in srgb,var(--pw-acc) 68%,var(--pw-bg3)); }
-.pw-activity-cell.l4 { background:var(--pw-acc); }
-.pw-activity-cell.today { outline:1px solid var(--pw-acc); outline-offset:1px; }
+.pw-activity-cell.l1 { background:#9be9a8; }
+.pw-activity-cell.l2 { background:#40c463; }
+.pw-activity-cell.l3 { background:#30a14e; }
+.pw-activity-cell.l4 { background:#216e39; }
 .pw-activity-strip.compact { margin-top:2px; }
 .pw-activity-strip.compact .label { display:none; }
 .pw-task-side { justify-content:flex-start; } }
@@ -2085,6 +2082,14 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 			);
 		}
 
+		function formatTokens(value) {
+			const number = Math.max(0, Number(value) || 0);
+			if (number >= 1_000_000_000) return `${(number / 1_000_000_000).toFixed(1)}B`;
+			if (number >= 1_000_000) return `${(number / 1_000_000).toFixed(1)}M`;
+			if (number >= 1_000) return `${(number / 1_000).toFixed(1)}K`;
+			return String(Math.round(number));
+		}
+
 		function TaskActivityStrip({ counts = [], compact = false }) {
 			const values = Array.from({ length: 7 }, (_, index) => Math.max(0, Number(counts[index] ?? 0)));
 			const today = new Date();
@@ -2092,20 +2097,21 @@ button.pw-usage-cell:hover { outline:1px solid var(--pw-acc); }
 				const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (6 - index));
 				return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 			});
-			const level = (value) => (value <= 0 ? 0 : value <= 1 ? 1 : value <= 3 ? 2 : value <= 6 ? 3 : 4);
+			const peak = Math.max(...values, 1);
+			const level = (value) => (value <= 0 ? 0 : value <= peak * 0.25 ? 1 : value <= peak * 0.5 ? 2 : value <= peak * 0.75 ? 3 : 4);
 			const total = values.reduce((sum, value) => sum + value, 0);
 			return h(
 				"div",
-				{ className: `pw-activity-strip${compact ? " compact" : ""}`, title: `近 7 天提问：${labels.map((label, index) => `${label} ${values[index]} 次`).join(" · ")}` },
+				{ className: `pw-activity-strip${compact ? " compact" : ""}`, title: `近 7 天 token：${labels.map((label, index) => `${label} ${formatTokens(values[index])}`).join(" · ")}` },
 				h("span", { className: "label" }, "近7天"),
 				values.map((value, index) =>
 					h("span", {
 						key: labels[index],
-						className: `pw-activity-cell l${level(value)}${index === 6 ? " today" : ""}`,
-						title: `${labels[index]} · 提问 ${value} 次`,
+						className: `pw-activity-cell l${level(value)}`,
+						title: `${labels[index]} · ${Math.round(value).toLocaleString("zh-CN")} tokens`,
 					}),
 				),
-				h("span", { className: "total" }, total === 0 ? "—" : String(total)),
+				h("span", { className: "total" }, total === 0 ? "—" : formatTokens(total)),
 			);
 		}
 

@@ -16,6 +16,7 @@
 
 import { registerWorkbenchRoutes } from "./lib/api.js";
 import { createAssistantService } from "./lib/assistant.js";
+import { ActivityIndex } from "./lib/activity-index.js";
 import { openWorkbenchDomains, WorkbenchStore } from "./lib/domain.js";
 import { WorkbenchService } from "./lib/service.js";
 import { registerWorkbenchTools } from "./lib/tools.js";
@@ -69,6 +70,15 @@ async function apply(ctx, config = {}) {
 		getDefaultModel: () => llmRefs.defaultModel,
 		logger: ctx.logger,
 	});
+	const activityIndex = new ActivityIndex({
+		getIndexPath: () => service.getActivityIndexPath(),
+		logger: ctx.logger,
+	});
+	service.setActivityIndex(activityIndex);
+	activityIndex.start(ctx).catch((error) => {
+		ctx.logger?.warn?.(`[project-workbench] activity index start failed: ${String(error?.stack ?? error)}`);
+	});
+	ctx.effect(() => () => activityIndex.dispose(), "project-workbench: activity index");
 
 	// 主存储惰性打开：storageDomain 缺失/打开失败时插件仍能挂载，
 	// HTTP / 工具会返回可读的 storage-unavailable 错误，而不是让整个 profile 起不来。
