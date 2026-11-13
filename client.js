@@ -1327,7 +1327,7 @@ button:has([data-workbench-entry]) [class*="panelGlyph"] { overflow:visible; }
 .pw-field { display:flex; flex-direction:column; gap:4px; }
 .pw-field > label { font-size:11.5px; color:var(--pw-mut); font-weight:600; }
 .pw-field .req { color:var(--pw-red); margin-left:2px; }
-.pw-input, .pw-textarea, .pw-select { width:100%; border:1px solid var(--pw-bd); background:var(--pw-bg3); color:var(--pw-fg);
+.pw-input, .pw-textarea, .pw-select { box-sizing:border-box; width:100%; border:1px solid var(--pw-bd); background:var(--pw-bg3); color:var(--pw-fg);
   border-radius:7px; padding:6px 9px; font-size:12.5px; font-family:inherit; outline:none; }
 .pw-input:focus, .pw-textarea:focus, .pw-select:focus { border-color:var(--pw-acc); box-shadow:0 0 0 2px color-mix(in srgb,var(--pw-acc) 18%,transparent); }
 .pw-textarea { resize:vertical; min-height:72px; line-height:1.55; }
